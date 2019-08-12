@@ -1,11 +1,11 @@
-"use strict";
+'use strict';
 
-var React = require("react"),
-  ReactDOM = require("react-dom"),
-  PropTypes = require("prop-types"),
-  createReactClass = require("create-react-class"),
-  S3Upload = require("./s3upload.js"),
-  objectAssign = require("object-assign");
+var React = require('react'),
+  ReactDOM = require('react-dom'),
+  PropTypes = require('prop-types'),
+  createReactClass = require('create-react-class'),
+  S3Upload = require('./s3upload.js'),
+  objectAssign = require('object-assign');
 
 var ReactS3Uploader = createReactClass({
   propTypes: {
@@ -37,30 +37,30 @@ var ReactS3Uploader = createReactClass({
   getDefaultProps: function() {
     return {
       preprocess: function(file, next) {
-        console.log("Pre-process: " + file.name);
+        console.log('Pre-process: ' + file.name);
         next(file);
       },
       onSignedUrl: function(signingServerResponse) {
-        console.log("Signing server response: ", signingServerResponse);
+        console.log('Signing server response: ', signingServerResponse);
       },
       onProgress: function(percent, message, file) {
-        console.log("Upload progress: " + percent + "% " + message);
+        console.log('Upload progress: ' + percent + '% ' + message);
       },
       onFinish: function(signResult) {
-        console.log("Upload finished: " + signResult.publicUrl);
+        console.log('Upload finished: ' + signResult.publicUrl);
       },
       onError: function(message) {
-        console.log("Upload error: " + message);
+        console.log('Upload error: ' + message);
       },
-      server: "",
-      signingUrlMethod: "GET",
+      server: '',
+      signingUrlMethod: 'GET',
       scrubFilename: function(filename) {
-        return filename.replace(/[^\w\d_\-\.]+/gi, "");
+        return filename.replace(/[^\w\d_\-\.]+/gi, '');
       },
-      s3path: "",
+      s3path: '',
       autoUpload: true,
       usePostForm: false,
-      acl: "public-read"
+      acl: 'public-read'
     };
   },
 
@@ -97,14 +97,14 @@ var ReactS3Uploader = createReactClass({
   },
 
   render: function() {
-    return React.createElement("input", this.getInputProps());
+    return React.createElement('input', this.getInputProps());
   },
 
   getInputProps: function() {
     // declare ref beforehand and filter out
     // `inputRef` by `ReactS3Uploader.propTypes`
     var additional = {
-      type: "file",
+      type: 'file',
       ref: this.props.inputRef
     };
 
@@ -134,11 +134,11 @@ var ReactS3Uploader = createReactClass({
 function clearInputFile(f) {
   if (f.value) {
     try {
-      f.value = ""; //for IE11, latest Chrome/Firefox/Opera...
+      f.value = ''; //for IE11, latest Chrome/Firefox/Opera...
     } catch (err) {}
     if (f.value) {
       //for IE5 ~ IE10
-      var form = document.createElement("form"),
+      var form = document.createElement('form'),
         parentNode = f.parentNode,
         ref = f.nextSibling;
       form.appendChild(f);

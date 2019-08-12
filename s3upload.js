@@ -6,7 +6,7 @@
 S3Upload.prototype.server = "";
 S3Upload.prototype.signingUrl = "/sign-s3";
 S3Upload.prototype.signingUrlMethod = "GET";
-S3Upload.prototype.successResponses = [200, 201];
+S3Upload.prototype.successResponses = [200, 201, 204];
 S3Upload.prototype.fileElement = null;
 S3Upload.prototype.files = null;
 S3Upload.prototype.files = null;

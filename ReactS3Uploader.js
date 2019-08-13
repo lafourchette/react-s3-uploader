@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 var React = require('react'),
     ReactDOM = require('react-dom'),
@@ -8,7 +8,6 @@ var React = require('react'),
     objectAssign = require('object-assign');
 
 var ReactS3Uploader = createReactClass({
-
     propTypes: {
         signingUrl: PropTypes.string,
         getSignedUrl: PropTypes.func,
@@ -19,12 +18,12 @@ var ReactS3Uploader = createReactClass({
         onError: PropTypes.func,
         signingUrlMethod: PropTypes.string,
         signingUrlHeaders: PropTypes.oneOfType([
-          PropTypes.object,
-          PropTypes.func
+            PropTypes.object,
+            PropTypes.func
         ]),
         signingUrlQueryParams: PropTypes.oneOfType([
-          PropTypes.object,
-          PropTypes.func
+            PropTypes.object,
+            PropTypes.func
         ]),
         signingUrlWithCredentials: PropTypes.bool,
         uploadRequestHeaders: PropTypes.object,
@@ -33,7 +32,9 @@ var ReactS3Uploader = createReactClass({
         scrubFilename: PropTypes.func,
         s3path: PropTypes.string,
         inputRef: PropTypes.func,
-        autoUpload: PropTypes.bool
+        autoUpload: PropTypes.bool,
+        usePostForm: PropTypes.bool,
+        acl: PropTypes.string
     },
 
     getDefaultProps: function() {
@@ -42,25 +43,27 @@ var ReactS3Uploader = createReactClass({
                 console.log('Pre-process: ' + file.name);
                 next(file);
             },
-            onSignedUrl: function( signingServerResponse ) {
+            onSignedUrl: function(signingServerResponse) {
                 console.log('Signing server response: ', signingServerResponse);
             },
             onProgress: function(percent, message, file) {
                 console.log('Upload progress: ' + percent + '% ' + message);
             },
             onFinish: function(signResult) {
-                console.log("Upload finished: " + signResult.publicUrl)
+                console.log('Upload finished: ' + signResult.publicUrl);
             },
             onError: function(message) {
-                console.log("Upload error: " + message);
+                console.log('Upload error: ' + message);
             },
             server: '',
             signingUrlMethod: 'GET',
             scrubFilename: function(filename) {
-                return filename.replace(/[^\w\d_\-\.]+/ig, '');
+                return filename.replace(/[^\w\d_\-\.]+/gi, '');
             },
             s3path: '',
-            autoUpload: true
+            autoUpload: true,
+            usePostForm: false,
+            acl: 'public-read'
         };
     },
 
@@ -82,7 +85,9 @@ var ReactS3Uploader = createReactClass({
             contentDisposition: this.props.contentDisposition,
             server: this.props.server,
             scrubFilename: this.props.scrubFilename,
-            s3path: this.props.s3path
+            s3path: this.props.s3path,
+            usePostForm: this.props.usePostForm,
+            acl: this.props.acl
         });
     },
 
@@ -106,41 +111,44 @@ var ReactS3Uploader = createReactClass({
             ref: this.props.inputRef
         };
 
-        if ( this.props.autoUpload ) {
+        if (this.props.autoUpload) {
             additional.onChange = this.uploadFile;
         }
-        
+
         var temporaryProps = objectAssign({}, this.props, additional);
         var inputProps = {};
 
         var invalidProps = Object.keys(ReactS3Uploader.propTypes);
 
-        for(var key in temporaryProps) {
-            if(temporaryProps.hasOwnProperty(key) && invalidProps.indexOf(key) === -1) {
+        for (var key in temporaryProps) {
+            if (
+                temporaryProps.hasOwnProperty(key) &&
+                invalidProps.indexOf(key) === -1
+            ) {
                 inputProps[key] = temporaryProps[key];
             }
         }
 
         return inputProps;
     }
-
 });
 
 // http://stackoverflow.com/a/24608023/194065
-function clearInputFile(f){
-    if(f.value){
-        try{
+function clearInputFile(f) {
+    if (f.value) {
+        try {
             f.value = ''; //for IE11, latest Chrome/Firefox/Opera...
-        }catch(err){ }
-        if(f.value){ //for IE5 ~ IE10
+        } catch (err) {}
+        if (f.value) {
+            //for IE5 ~ IE10
             var form = document.createElement('form'),
-                parentNode = f.parentNode, ref = f.nextSibling;
+                parentNode = f.parentNode,
+                ref = f.nextSibling;
             form.appendChild(f);
             form.reset();
-            parentNode.insertBefore(f,ref);
+            parentNode.insertBefore(f, ref);
         }
     }
 }
-
 
 module.exports = ReactS3Uploader;

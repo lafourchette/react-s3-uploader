@@ -1,15 +1,14 @@
-react-s3-uploader
-===========================
+# react-s3-uploader
 
 Provides a `React` component that automatically uploads to an S3 Bucket.
 
-Install
------------
+## Install
+
 ```bash
 $ npm install --save react-s3-uploader
 ```
-From Browser
-------------
+
+## From Browser
 
 ```jsx
 var ReactS3Uploader = require('react-s3-uploader');
@@ -35,6 +34,8 @@ var ReactS3Uploader = require('react-s3-uploader');
     server="http://cross-origin-server.com"
     inputRef={cmp => this.uploadInput = cmp}
     autoUpload={true}
+    usePostForm={false}
+    acl='public-read'
     />
 ```
 
@@ -52,7 +53,7 @@ all other files.
 running the ReactS3Uploader server component if it is not the same as the one from
 which the client is served.
 
-Use `scrubFilename` to provide custom filename scrubbing before uploading.  Prior to version 4.0, this library used `unorm` and `latinize` to filter out characters.  Since 4.0, we simply remove all characters that are not alphanumeric, underscores, dashes, or periods.
+Use `scrubFilename` to provide custom filename scrubbing before uploading. Prior to version 4.0, this library used `unorm` and `latinize` to filter out characters. Since 4.0, we simply remove all characters that are not alphanumeric, underscores, dashes, or periods.
 
 The resulting DOM is essentially:
 
@@ -63,18 +64,18 @@ The resulting DOM is essentially:
 The `preprocess(file, next)` prop provides an opportunity to do something before the file upload begins,
 modify the file (scaling the image for example), or abort the upload by not calling `next(file)`.
 
-When a file is chosen, it will immediately be uploaded to S3 (unless `autoUpload` is `false`).  You can listen for progress (and create a status bar, for example) by providing an `onProgress` function to the component.
+When a file is chosen, it will immediately be uploaded to S3 (unless `autoUpload` is `false`). You can listen for progress (and create a status bar, for example) by providing an `onProgress` function to the component.
 
 ### Extra props
+
 You can pass any extra props to `<ReactS3Uploader />` and these will be passed down to the final `<input />`. which means that if you give the ReactS3Uploader a className or a name prop the input will have those as well.
 
-Using custom function to get signedUrl
-------------
+## Using custom function to get signedUrl
 
 It is possible to use a custom function to provide `signedUrl` directly to `s3uploader` by adding `getSignedUrl` prop. The function you provide should take `file` and `callback` arguments. Callback should be called with an object containing `signedUrl` key.
 
 ```javascript
-import ApiClient from './ApiClient';
+import ApiClient from "./ApiClient";
 
 function getSignedUrl(file, callback) {
   const client = new ApiClient();
@@ -83,15 +84,15 @@ function getSignedUrl(file, callback) {
     contentType: file.type
   };
 
-  client.get('/my/signing/server', { params })
-  .then(data => {
-    callback(data);
-  })
-  .catch(error => {
-    console.error(error);
-  });
+  client
+    .get("/my/signing/server", { params })
+    .then(data => {
+      callback(data);
+    })
+    .catch(error => {
+      console.error(error);
+    });
 }
-
 
 <ReactS3Uploader
   className={uploaderClassName}
@@ -101,31 +102,49 @@ function getSignedUrl(file, callback) {
   onError={onError}
   onFinish={onFinish}
   uploadRequestHeaders={{
-    'x-amz-acl': 'public-read'
+    "x-amz-acl": "public-read"
   }}
   contentDisposition="auto"
-/>
-
+/>;
 ```
 
-Server-Side
------------
+### Using custom function to get createPresignedPost
+
+You can use a presigned POST method, instead of the signedUrl, to upload objects to S3. This method will allow you to specify more upload conditions, which are not supported on signedUrl.
+
+To use presigned POST method set usePostForm as true. The response from getSignedUrl will turn into an object that contains the following (but not only) fields:
+
+{
+  url: "https://s3.eu-west-3.amazonaws.com/bucket",
+  fields: {
+    bucket: "bucket",
+    key: "objectName",
+    Policy: "signedparam",
+  }
+}
+
+## Server-Side
+
 ### Bundled router
+
 You can use the Express router that is bundled with this module to answer calls to `/s3/sign`
 
 ```js
-app.use('/s3', require('react-s3-uploader/s3router')({
+app.use(
+  "/s3",
+  require("react-s3-uploader/s3router")({
     bucket: "MyS3Bucket",
-    region: 'us-east-1', //optional
-    signatureVersion: 'v4', //optional (use for some amazon regions: frankfurt and others)
-    headers: {'Access-Control-Allow-Origin': '*'}, // optional
-    ACL: 'private', // this is default
+    region: "us-east-1", //optional
+    signatureVersion: "v4", //optional (use for some amazon regions: frankfurt and others)
+    headers: { "Access-Control-Allow-Origin": "*" }, // optional
+    ACL: "private", // this is default
     uniquePrefix: true // (4.0.2 and above) default is true, setting the attribute to false preserves the original filename in S3
-}));
+  })
+);
 ```
 
-This also provides another endpoint: `GET /s3/img/(.*)` and `GET /s3/uploads/(.*)`.  This will create a temporary URL
-that provides access to the uploaded file (which are uploaded privately by default).  The
+This also provides another endpoint: `GET /s3/img/(.*)` and `GET /s3/uploads/(.*)`. This will create a temporary URL
+that provides access to the uploaded file (which are uploaded privately by default). The
 request is then redirected to the URL, so that the image is served to the client.
 
 If you need to use pass more than region and signatureVersion to S3 instead use the `getS3` param. `getS3` accepts a
@@ -135,7 +154,7 @@ function that returns a new AWS.S3 instance. This is also useful if you want to 
 
 #### Access/Secret Keys
 
-The `aws-sdk` must be configured with your account's Access Key and Secret Access Key.  [There are a number of ways to provide these](http://docs.aws.amazon.com/AWSJavaScriptSDK/guide/node-configuring.html), but setting up environment variables is the quickest.  You just have to configure environment variables `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`, and AWS automatically picks them up.
+The `aws-sdk` must be configured with your account's Access Key and Secret Access Key. [There are a number of ways to provide these](http://docs.aws.amazon.com/AWSJavaScriptSDK/guide/node-configuring.html), but setting up environment variables is the quickest. You just have to configure environment variables `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`, and AWS automatically picks them up.
 
 ### Other Types of Servers
 
@@ -188,25 +207,25 @@ end
 #### [Micro](https://github.com/zeit/micro)
 
 ```javascript
-const aws = require('aws-sdk')
-const uuidv4 = require('uuid/v4')
-const { createError } = require('micro')
+const aws = require("aws-sdk");
+const uuidv4 = require("uuid/v4");
+const { createError } = require("micro");
 
 const options = {
-  bucket: 'S3_BUCKET_NAME',
-  region: 'S3_REGION',
-  signatureVersion: 'v4',
-  ACL: 'public-read'
-}
+  bucket: "S3_BUCKET_NAME",
+  region: "S3_REGION",
+  signatureVersion: "v4",
+  ACL: "public-read"
+};
 
-const s3 = new aws.S3(options)
+const s3 = new aws.S3(options);
 
 module.exports = (req, res) => {
-  const originalFilename = req.query.objectName
+  const originalFilename = req.query.objectName;
 
   // custom filename using random uuid + file extension
-  const fileExtension = originalFilename.split('.').pop()
-  const filename = `${uuidv4()}.${fileExtension}`
+  const fileExtension = originalFilename.split(".").pop();
+  const filename = `${uuidv4()}.${fileExtension}`;
 
   const params = {
     Bucket: options.bucket,
@@ -214,9 +233,9 @@ module.exports = (req, res) => {
     Expires: 60,
     ContentType: req.query.contentType,
     ACL: options.ACL
-  }
+  };
 
-  const signedUrl = s3.getSignedUrl('putObject', params)
+  const signedUrl = s3.getSignedUrl("putObject", params);
 
   if (signedUrl) {
     // you may also simply return the signed url, i.e. `return { signedUrl }`
@@ -224,14 +243,13 @@ module.exports = (req, res) => {
       signedUrl,
       filename,
       originalFilename,
-      publicUrl: signedUrl.split('?').shift()
-    }
+      publicUrl: signedUrl.split("?").shift()
+    };
   } else {
-    throw createError(500, 'Cannot create S3 signed URL')
+    throw createError(500, "Cannot create S3 signed URL");
   }
-}
+};
 ```
-
 
 ##### Other Servers
 

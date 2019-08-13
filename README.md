@@ -110,9 +110,18 @@ function getSignedUrl(file, callback) {
 
 ### Using custom function to get createPresignedPost
 
-Something you want use createPresignedPost method instead signedUrl to get "signedUrl" and additional parameters to take control over the conditions you want allow send files to "signedUrl".
+You can use a presigned POST method, instead of the signedUrl, to upload objects to S3. This method will allow you to specify more upload conditions, which are not supported on signedUrl.
 
-If it's your case set `usePostForm` as `true` and getSignedUrl should return object with `url` and object `fields` with repective "presignedUrl" and conditions fields.
+To use presigned POST method set usePostForm as true. The response from getSignedUrl will turn into an object that contains the following (but not only) fields:
+
+{
+  url: "https://s3.eu-west-3.amazonaws.com/bucket",
+  fields: {
+    bucket: "bucket",
+    key: "objectName",
+    Policy: "signedparam",
+  }
+}
 
 ## Server-Side
 

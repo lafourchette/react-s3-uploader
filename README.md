@@ -114,6 +114,7 @@ You can use a presigned POST method, instead of the signedUrl, to upload objects
 
 To use presigned POST method set usePostForm as true. The response from getSignedUrl will turn into an object that contains the following (but not only) fields:
 
+```
 {
   url: "https://s3.eu-west-3.amazonaws.com/bucket",
   fields: {
@@ -122,6 +123,7 @@ To use presigned POST method set usePostForm as true. The response from getSigne
     Policy: "signedparam",
   }
 }
+```
 
 ## Server-Side
 

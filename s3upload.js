@@ -155,16 +155,18 @@ S3Upload.prototype.uploadToS3 = function(file, signResult) {
         var fields = signResult.fields;
         var url = signResult.url;
         xhr = this.createCORSRequest('POST', url);
+        formData.append('acl', this.acl);
+        formData.append('Content-type', file.type);
         Object.keys(fields)
             .sort(argName1 => (argName1 === 'key' ? -1 : 0))
             .forEach(fieldName =>
                 formData.append(fieldName, fields[fieldName])
             );
-        formData.append('acl', this.acl);
-        formData.append('Content-type', file.type);
+
     } else {
         xhr = this.createCORSRequest('PUT', signResult.signedUrl);
         xhr.setRequestHeader('Content-Type', file.type);
+        xhr.setRequestHeader('x-amz-acl', this.acl);
         if (this.contentDisposition) {
             let disposition = this.contentDisposition;
             if (disposition === 'auto') {
@@ -187,44 +189,44 @@ S3Upload.prototype.uploadToS3 = function(file, signResult) {
                 xhr.setRequestHeader(key, val);
             });
         }
-        if (this.uploadRequestHeaders) {
-            const uploadRequestHeaders = this.uploadRequestHeaders;
-            Object.keys(uploadRequestHeaders).forEach(key => {
-                const val = uploadRequestHeaders[key];
-                xhr.setRequestHeader(key, val);
-            });
-        } else {
-            xhr.setRequestHeader('x-amz-acl', this.acl);
-        }
+
     }
-
-    formData.append('file', file);
-
+    
     if (!xhr) {
-        this.onError('CORS not supported', file);
-    } else {
-        xhr.onload = function() {
-            if (this.successResponses.indexOf(xhr.status) >= 0) {
-                this.onProgress(100, 'Upload completed', file);
-                return this.onFinishS3Put(signResult, file);
-            }
-            return this.onError(`Upload error: ${xhr.status}`, file);
-        }.bind(this);
-        xhr.onerror = function() {
-            return this.onError('XHR error', file);
-        }.bind(this);
-        xhr.upload.onprogress = function(e) {
-            let percentLoaded;
-            if (e.lengthComputable) {
-                percentLoaded = Math.round((e.loaded / e.total) * 100);
-                return this.onProgress(
-                    percentLoaded,
-                    percentLoaded === 100 ? 'Finalizing' : 'Uploading',
-                    file
-                );
-            }
-        }.bind(this);
+        return this.onError('CORS not supported', file);
     }
+    
+    formData.append('file', file);
+    
+    if (this.uploadRequestHeaders) {
+        const uploadRequestHeaders = this.uploadRequestHeaders;
+        Object.keys(uploadRequestHeaders).forEach(key => {
+            const val = uploadRequestHeaders[key];
+            xhr.setRequestHeader(key, val);
+        });
+    }
+
+    xhr.onload = function() {
+        if (this.successResponses.indexOf(xhr.status) >= 0) {
+            this.onProgress(100, 'Upload completed', file);
+            return this.onFinishS3Put(signResult, file);
+        }
+        return this.onError(`Upload error: ${xhr.status}`, file);
+    }.bind(this);
+    xhr.onerror = function() {
+        return this.onError('XHR error', file);
+    }.bind(this);
+    xhr.upload.onprogress = function(e) {
+        let percentLoaded;
+        if (e.lengthComputable) {
+            percentLoaded = Math.round((e.loaded / e.total) * 100);
+            return this.onProgress(
+                percentLoaded,
+                percentLoaded === 100 ? 'Finalizing' : 'Uploading',
+                file
+            );
+        }
+    }.bind(this);
 
     this.httprequest = xhr;
     return xhr.send(formData);

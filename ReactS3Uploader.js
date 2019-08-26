@@ -87,7 +87,8 @@ var ReactS3Uploader = createReactClass({
             scrubFilename: this.props.scrubFilename,
             s3path: this.props.s3path,
             usePostForm: this.props.usePostForm,
-            acl: this.props.acl
+            acl: this.props.acl,
+            clear: this.clear
         });
     },
 

@@ -62,6 +62,7 @@ S3Upload.prototype.handleFileSelect = function(files) {
             }.bind(this)
         );
     }
+    this.clear();
 };
 
 S3Upload.prototype.createCORSRequest = function(method, url, opts) {
@@ -191,13 +192,13 @@ S3Upload.prototype.uploadToS3 = function(file, signResult) {
         }
 
     }
-    
+
     if (!xhr) {
         return this.onError('CORS not supported', file);
     }
-    
+
     formData.append('file', file);
-    
+
     if (this.uploadRequestHeaders) {
         const uploadRequestHeaders = this.uploadRequestHeaders;
         Object.keys(uploadRequestHeaders).forEach(key => {

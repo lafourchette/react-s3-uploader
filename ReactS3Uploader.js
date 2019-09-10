@@ -109,7 +109,8 @@ var ReactS3Uploader = createReactClass({
         // `inputRef` by `ReactS3Uploader.propTypes`
         var additional = {
             type: 'file',
-            ref: this.props.inputRef
+            ref: this.props.inputRef,
+            style: {cursor: 'pointer'},
         };
 
         if (this.props.autoUpload) {

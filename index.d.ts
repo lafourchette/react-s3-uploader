@@ -8,10 +8,23 @@ declare module 'react-s3-uploader' {
     fileKey: string;
   }
 
+  interface PostFormSignedUrl {
+    url: string;
+    fields: {
+      Policy: string;
+      'X-Amz-Signature': string;
+      [key: string]: string;
+    };
+  }
+  
+  interface SignedUrl {
+    signedUrl: string | PostFormSignedUrl;
+  }
+
   export interface ReactS3UploaderProps {
     signingUrl?: string;
     signingUrlMethod?: 'GET' | 'POST';
-    getSignedUrl?: (file: File, callback: (params: { signedUrl: string; }) => any) => any;
+    getSignedUrl?: (file: File, callback: (params: { signedUrl: SignedUrl; }) => any) => any;
     accept?: string;
     s3path?: string;
     preprocess?: (file: File, next: (file: File) => any) => any;

@@ -83,6 +83,15 @@ S3Upload.prototype.createCORSRequest = function(method, url, opts) {
     return xhr;
 };
 
+S3Upload.prototype._getErrorRequestContext = function (xhr) {
+    return {
+      response: xhr.responseText,
+      status: xhr.status,
+      statusText: xhr.statusText,
+      readyState: xhr.readyState
+    };
+}
+
 S3Upload.prototype.executeOnSignedUrl = function(file, callback) {
     var fileName = this.scrubFilename(file.name);
     var queryString =
@@ -130,7 +139,11 @@ S3Upload.prototype.executeOnSignedUrl = function(file, callback) {
                 result = JSON.parse(xhr.responseText);
                 this.onSignedUrl(result);
             } catch (error) {
-                this.onError('Invalid response from server', file);
+                this.onError(
+                    'Invalid response from server',
+                    file,
+                    this._getErrorRequestContext(xhr)
+                );
                 return false;
             }
             return callback(result);

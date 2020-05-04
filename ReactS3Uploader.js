@@ -31,7 +31,10 @@ var ReactS3Uploader = createReactClass({
         server: PropTypes.string,
         scrubFilename: PropTypes.func,
         s3path: PropTypes.string,
-        inputRef: PropTypes.func,
+        inputRef: PropTypes.oneOfType([
+            PropTypes.object,
+            PropTypes.func
+        ]),
         autoUpload: PropTypes.bool,
         usePostForm: PropTypes.bool,
         acl: PropTypes.string

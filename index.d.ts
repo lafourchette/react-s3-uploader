@@ -30,7 +30,7 @@ declare module 'react-s3-uploader' {
     preprocess?: (file: File, next: (file: File) => any) => any;
     onSignedUrl?: (response: S3Response) => any;
     onProgress?: (percent: number, status: string, file: File) => any;
-    onError?: (message: string) => any;
+    onError?: (message: string, file: File) => any;
     onFinish?: (result: S3Response, file: File) => any;
     signingUrlHeaders?: {
       additional: object;

@@ -8,7 +8,7 @@ declare module 'react-s3-uploader' {
     fileKey: string;
   }
 
-  interface PostFormSignedUrl {
+  export interface PostFormSignedUrl {
     url: string;
     fields: {
       Policy: string;
@@ -31,7 +31,7 @@ declare module 'react-s3-uploader' {
     onSignedUrl?: (response: S3Response) => any;
     onProgress?: (percent: number, status: string, file: File) => any;
     onError?: (message: string, file: File) => any;
-    onFinish?: (result: S3Response, file: File) => any;
+    onFinish?: (result: S3Response | PostFormSignedUrl, file: File) => any;
     signingUrlHeaders?: {
       additional: object;
     };

@@ -1,4 +1,4 @@
-declare module 'react-s3-uploader' {
+declare module '@lafourchette/react-s3-uploader' {
   import { Component, RefObject } from 'react';
 
   export interface S3Response {
@@ -50,8 +50,8 @@ declare module 'react-s3-uploader' {
   export default ReactS3Uploader;
 }
 
-declare module 'react-s3-uploader/s3upload' {
-  import { ReactS3UploaderProps } from 'react-s3-uploader';
+declare module '@lafourchette/react-s3-uploader/s3upload' {
+  import { ReactS3UploaderProps } from '@lafourchette/react-s3-uploader';
 
   class S3Upload {
     constructor(options: ReactS3UploaderProps)

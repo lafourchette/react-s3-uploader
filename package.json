@@ -1,14 +1,18 @@
 {
-  "name": "react-s3-uploader",
-  "version": "4.10.3",
+  "name": "@lafourchette/react-s3-uploader",
+  "version": "4.11.0",
   "description": "React component that renders a file input and automatically uploads to an S3 bucket",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "publishConfig": {
+    "registry": "https://npmregistry.lafourchette.io",
+    "access": "restricted"
+  },
   "repository": {
     "type": "git",
-    "url": "git@github.com:odysseyscience/react-s3-uploader.git"
+    "url": "git+https://github.com/lafourchette/react-s3-uploader.git"
   },
   "keywords": [
     "react",
@@ -20,9 +24,9 @@
   "author": "Sean Adkinson",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/odysseyscience/react-s3-uploader/issues"
+    "url": "https://github.com/lafourchette/react-s3-uploader/issues"
   },
-  "homepage": "https://github.com/odysseyscience/react-s3-uploader",
+  "homepage": "https://github.com/lafourchette/react-s3-uploader",
   "dependencies": {
     "aws-sdk": "2.x",
     "create-react-class": "^15.5.2",

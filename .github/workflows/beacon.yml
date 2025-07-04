@@ -1,0 +1,8 @@
+name: Both Users Assignment Trigger for PR
+on:
+  pull_request:
+    types: [assigned]
+
+jobs:
+  ci:
+    uses: lafourchette/github-actions/.github/workflows/beacon-autofix-post-action.yml@v1
